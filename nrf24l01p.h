@@ -160,7 +160,7 @@ typedef struct {
 	uint8_t status;
 }nrf24l01p_HandleTypeDef;
 
-void nrf24l01_create_handle(nrf24l01p_HandleTypeDef *nrf, SPI_HandleTypeDef *hspi, uint16_t spi_timeout, GPIO_TypeDef *csn_port, uint16_t csn_pin, GPIO_TypeDef *ce_port, uint16_t ce_pin);
+void nrf24l01p_create_handle(nrf24l01p_HandleTypeDef *nrf, SPI_HandleTypeDef *hspi, uint16_t spi_timeout, GPIO_TypeDef *csn_port, uint16_t csn_pin, GPIO_TypeDef *ce_port, uint16_t ce_pin);
 
 /* Low Level Functions */
 void nrf24l01p_set_csn(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_state state);
