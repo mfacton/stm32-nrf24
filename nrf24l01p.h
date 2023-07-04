@@ -229,8 +229,8 @@ nrf24l01p_mode nrf24l01p_get_mode(nrf24l01p_HandleTypeDef *nrf);
 void nrf24l01p_set_auto_ack_en(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_pipe pipe, nrf24l01p_state state);
 nrf24l01p_state nrf24l01p_get_auto_ack_en(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_pipe pipe);
 
-void nrf24l01p_set_pipe_en(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_pipe pipe, nrf24l01p_state state);
-nrf24l01p_state nrf24l01p_get_pipe_en(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_pipe pipe);
+void nrf24l01p_set_rx_pipe_en(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_pipe pipe, nrf24l01p_state state);
+nrf24l01p_state nrf24l01p_get_rx_pipe_en(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_pipe pipe);
 
 void nrf24l01p_set_address_width(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_address_width width);
 nrf24l01p_address_width nrf24l01p_get_address_width(nrf24l01p_HandleTypeDef *nrf);
@@ -249,7 +249,7 @@ uint16_t nrf24l01p_get_frequency(nrf24l01p_HandleTypeDef *nrf);
 
 //continuous carrier transmit
 void nrf24l01p_set_rx_continuous(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_state state);
-nrf24l01p_state nrf24l01p_get_rx_cont(nrf24l01p_HandleTypeDef *nrf);
+nrf24l01p_state nrf24l01p_get_rx_continuous(nrf24l01p_HandleTypeDef *nrf);
 
 void nrf24l01p_set_data_rate(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_data_rate rate);
 nrf24l01p_data_rate nrf24l01p_get_data_rate(nrf24l01p_HandleTypeDef *nrf);
