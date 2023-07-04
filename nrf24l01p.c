@@ -471,6 +471,6 @@ void nrf24l01p_irq_handler(nrf24l01p_HandleTypeDef *nrf) {
 
 }
 
-__weak void nrf24l01p_irq_callback() {
+__weak void nrf24l01p_rx_irq_callback(uint8_t *buf, uint8_t len) {
 
 }
