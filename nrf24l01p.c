@@ -193,10 +193,10 @@ nrf24l01p_state nrf24l01p_get_auto_ack_en(nrf24l01p_HandleTypeDef *nrf, nrf24l01
 	return nrf24l01p_read_register_bit(nrf, NRF24L01P_REG_EN_AA, pipe);
 }
 
-void nrf24l01p_set_pipe_en(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_pipe pipe, nrf24l01p_state state) {
+void nrf24l01p_set_rx_pipe_en(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_pipe pipe, nrf24l01p_state state) {
 	nrf24l01p_write_register_bit(nrf, NRF24L01P_REG_EN_RXADDR, pipe, state);
 }
-nrf24l01p_state nrf24l01p_get_pipe_en(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_pipe pipe) {
+nrf24l01p_state nrf24l01p_get_rx_pipe_en(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_pipe pipe) {
 	return nrf24l01p_read_register_bit(nrf, NRF24L01P_REG_EN_RXADDR, pipe);
 }
 
@@ -241,7 +241,7 @@ uint16_t nrf24l01p_get_frequency(nrf24l01p_HandleTypeDef *nrf) {
 void nrf24l01p_set_rx_continuous(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_state state) {
 	nrf24l01p_write_register_bit(nrf, NRF24L01P_REG_RF_SETUP, 7, state);
 }
-nrf24l01p_state nrf24l01p_get_rx_cont(nrf24l01p_HandleTypeDef *nrf) {
+nrf24l01p_state nrf24l01p_get_rx_continuous(nrf24l01p_HandleTypeDef *nrf) {
 	return nrf24l01p_read_register(nrf, NRF24L01P_REG_RF_SETUP);
 }
 
