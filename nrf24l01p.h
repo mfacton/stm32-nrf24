@@ -323,7 +323,7 @@ void nrf24l01p_rx_receive(nrf24l01p_HandleTypeDef *nrf, uint8_t* buf);
 void nrf24l01p_tx_transmit(nrf24l01p_HandleTypeDef *nrf, uint8_t* buf);
 
 //should be called in the interrupt callback
-void nrf24l01p_rx_irq_handler(nrf24l01p_HandleTypeDef *nrf);
+void nrf24l01p_irq_handler(nrf24l01p_HandleTypeDef *nrf);
 
 //redefine this with what you want to happen when data is recieved
 __weak void nrf24l01p_rx_irq_callback(uint8_t *buf, uint8_t len);
