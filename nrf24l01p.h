@@ -248,7 +248,7 @@ void nrf24l01p_set_frequency(nrf24l01p_HandleTypeDef *nrf, uint16_t frequency);
 uint16_t nrf24l01p_get_frequency(nrf24l01p_HandleTypeDef *nrf);
 
 //continuous carrier transmit
-void nrf24l01p_set_rx_cont(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_state state);
+void nrf24l01p_set_rx_continuous(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_state state);
 nrf24l01p_state nrf24l01p_get_rx_cont(nrf24l01p_HandleTypeDef *nrf);
 
 void nrf24l01p_set_data_rate(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_data_rate rate);
