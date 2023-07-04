@@ -1,2 +1,10 @@
 # STM32_HAL_nrf24l01p
 STM32 abstraction library for nrf24l01+ using HAL
+
+functions labeled "Main Functions" are not complete
+
+functions labeled "Read Write Registers" have functionality to control all registers of the nrf24l01+
+
+functions labeled "Commands" have functionality to control all commands of the nrf24l01+
+
+functions labeled "Low Level Functions" are other functions which control the nrf24l01+ directly
