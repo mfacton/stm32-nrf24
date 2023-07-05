@@ -97,10 +97,8 @@ void nrf24l01p_write_register_buffer(nrf24l01p_HandleTypeDef *nrf, uint8_t reg, 
 	nrf24l01p_write_command_buffer(nrf, NRF24L01P_CMD_W_REGISTER | reg, buf, len);
 }
 
-uint8_t nrf24l01p_read_rx_fifo(nrf24l01p_HandleTypeDef *nrf, uint8_t *buf) {
-	uint8_t len_pl = nrf24l01p_read_rx_pl_width(nrf);
-	nrf24l01p_read_command_buffer(nrf, NRF24L01P_CMD_R_RX_PAYLOAD, buf, len_pl);
-	return len_pl;
+void nrf24l01p_read_rx_fifo(nrf24l01p_HandleTypeDef *nrf, uint8_t *buf, uint8_t len) {
+	nrf24l01p_read_command_buffer(nrf, NRF24L01P_CMD_R_RX_PAYLOAD, buf, len);
 }
 void nrf24l01p_write_tx_fifo(nrf24l01p_HandleTypeDef *nrf, uint8_t *buf, uint8_t len) {
 	nrf24l01p_write_command_buffer(nrf, NRF24L01P_CMD_W_TX_PAYLOAD, buf, len);
@@ -137,24 +135,24 @@ uint8_t nrf24l01p_get_status(nrf24l01p_HandleTypeDef *nrf) {
 }
 
 /* Read Write Registers*/
-void nrf24l01p_set_rx_irq(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_state state) {
+void nrf24l01p_set_irq_rx_en(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_state state) {
 	nrf24l01p_write_register_bit(nrf, NRF24L01P_REG_CONFIG, 6, 1-state);
 }
-nrf24l01p_state nrf24l01p_get_rx_irq(nrf24l01p_HandleTypeDef *nrf) {
+nrf24l01p_state nrf24l01p_get_irq_rx_en(nrf24l01p_HandleTypeDef *nrf) {
 	return 1-nrf24l01p_read_register_bit(nrf, NRF24L01P_REG_CONFIG, 6);
 }
 
-void nrf24l01p_set_tx_irq(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_state state) {
+void nrf24l01p_set_irq_tx_en(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_state state) {
 	nrf24l01p_write_register_bit(nrf, NRF24L01P_REG_CONFIG, 5, 1-state);
 }
-nrf24l01p_state nrf24l01p_get_tx_irq(nrf24l01p_HandleTypeDef *nrf) {
+nrf24l01p_state nrf24l01p_get_irq_tx_en(nrf24l01p_HandleTypeDef *nrf) {
 	return 1-nrf24l01p_read_register_bit(nrf, NRF24L01P_REG_CONFIG, 5);
 }
 
-void nrf24l01p_set_rt_irq(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_state state) {
+void nrf24l01p_set_irq_rt_en(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_state state) {
 	nrf24l01p_write_register_bit(nrf, NRF24L01P_REG_CONFIG, 4, 1-state);
 }
-nrf24l01p_state nrf24l01p_get_rt_irq(nrf24l01p_HandleTypeDef *nrf) {
+nrf24l01p_state nrf24l01p_get_irq_rt_en(nrf24l01p_HandleTypeDef *nrf) {
 	return 1-nrf24l01p_read_register_bit(nrf, NRF24L01P_REG_CONFIG, 4);
 }
 
@@ -275,24 +273,13 @@ nrf24l01p_output_power nrf24l01p_get_output_power(nrf24l01p_HandleTypeDef *nrf) 
 	return ((nrf24l01p_read_register(nrf, NRF24L01P_REG_RF_SETUP) & 0x07) >> 1) & 0x03;
 }
 
-void nrf24l01p_set_rx_dr(nrf24l01p_HandleTypeDef *nrf) {
-	nrf24l01p_write_register_bit(nrf, NRF24L01P_REG_STATUS, 6, NRF_ON);
-}
-uint8_t nrf24l01p_get_rx_dr(nrf24l01p_HandleTypeDef *nrf) {
+nrf24l01p_state nrf24l01p_get_irq_rx(nrf24l01p_HandleTypeDef *nrf) {
 	return nrf24l01p_read_register_bit(nrf, NRF24L01P_REG_STATUS, 6);
 }
-
-void nrf24l01p_set_tx_ds(nrf24l01p_HandleTypeDef *nrf) {
-	nrf24l01p_write_register_bit(nrf, NRF24L01P_REG_STATUS, 5, NRF_ON);
-}
-uint8_t nrf24l01p_get_tx_ds(nrf24l01p_HandleTypeDef *nrf) {
+nrf24l01p_state nrf24l01p_get_irq_tx(nrf24l01p_HandleTypeDef *nrf) {
 	return nrf24l01p_read_register_bit(nrf, NRF24L01P_REG_STATUS, 5);
 }
-
-void nrf24l01p_set_max_rt(nrf24l01p_HandleTypeDef *nrf) {
-	nrf24l01p_write_register_bit(nrf, NRF24L01P_REG_STATUS, 4, NRF_ON);
-}
-uint8_t nrf24l01p_get_max_rt(nrf24l01p_HandleTypeDef *nrf) {
+nrf24l01p_state nrf24l01p_get_irq_rt(nrf24l01p_HandleTypeDef *nrf) {
 	return nrf24l01p_read_register_bit(nrf, NRF24L01P_REG_STATUS, 4);
 }
 
@@ -308,7 +295,7 @@ uint8_t nrf24l01p_get_rt_cnt(nrf24l01p_HandleTypeDef *nrf) {
 	return nrf24l01p_read_register(nrf, NRF24L01P_REG_OBSERVE_TX) & 0x0F;
 }
 
-uint8_t nrf24l01p_get_detect_power(nrf24l01p_HandleTypeDef *nrf) {
+nrf24l01p_state nrf24l01p_get_detect_power(nrf24l01p_HandleTypeDef *nrf) {
 	return nrf24l01p_read_register(nrf, NRF24L01P_REG_OBSERVE_TX);
 }
 
@@ -337,7 +324,7 @@ uint8_t nrf24l01p_get_payload_size(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_pipe 
 	return nrf24l01p_read_register(nrf, NRF24L01P_REG_RX_PW_P0+pipe);
 }
 
-uint8_t nrf24l01p_get_tx_reuse(nrf24l01p_HandleTypeDef *nrf) {
+nrf24l01p_state nrf24l01p_get_tx_reuse(nrf24l01p_HandleTypeDef *nrf) {
 	return nrf24l01p_read_register_bit(nrf, NRF24L01P_REG_FIFO_STATUS, 6);
 }
 
@@ -388,22 +375,29 @@ nrf24l01p_state nrf24l01p_get_dyn_ack_en(nrf24l01p_HandleTypeDef *nrf) {
 	return nrf24l01p_read_register_bit(nrf, NRF24L01P_REG_FEATURE, 0);
 }
 
-/* Main Functions */
-void nrf24l01p_reset(nrf24l01p_HandleTypeDef *nrf) {
-	nrf24l01p_set_power(nrf, NRF_OFF);
-	nrf24l01p_set_ce(nrf, NRF_OFF);
+/* Reset Functions */
+void nrf24l01p_flush_all(nrf24l01p_HandleTypeDef *nrf) {
+	nrf24l01p_flush_rx(nrf);
+	nrf24l01p_flush_tx(nrf);
+}
 
-	nrf24l01p_write_register(nrf, NRF24L01P_REG_CONFIG, 0x08);
-	nrf24l01p_write_register(nrf, NRF24L01P_REG_EN_AA, 0x3F);
-	nrf24l01p_write_register(nrf, NRF24L01P_REG_EN_RXADDR, 0x03);
-	nrf24l01p_write_register(nrf, NRF24L01P_REG_SETUP_AW, 0x03);
-	nrf24l01p_write_register(nrf, NRF24L01P_REG_SETUP_RETR, 0x03);
-	nrf24l01p_write_register(nrf, NRF24L01P_REG_RF_CH, 0x02);
-	nrf24l01p_write_register(nrf, NRF24L01P_REG_RF_SETUP, 0x0E);
-	nrf24l01p_write_register(nrf, NRF24L01P_REG_STATUS, 0x0E);
-	nrf24l01p_write_register(nrf, NRF24L01P_REG_OBSERVE_TX, 0x00);
-	nrf24l01p_write_register(nrf, NRF24L01P_REG_RPD, 0x00);
+void nrf24l01p_reset_irq_rx(nrf24l01p_HandleTypeDef *nrf) {
+	nrf24l01p_write_register_bit(nrf, NRF24L01P_REG_STATUS, 6, NRF_ON);
+}
+void nrf24l01p_reset_irq_tx(nrf24l01p_HandleTypeDef *nrf) {
+	nrf24l01p_write_register_bit(nrf, NRF24L01P_REG_STATUS, 5, NRF_ON);
+}
+void nrf24l01p_reset_irq_rt(nrf24l01p_HandleTypeDef *nrf) {
+	nrf24l01p_write_register_bit(nrf, NRF24L01P_REG_STATUS, 4, NRF_ON);
+}
 
+void nrf24l01p_reset_irq_all(nrf24l01p_HandleTypeDef *nrf) {
+	nrf24l01p_reset_irq_rx(nrf);
+	nrf24l01p_reset_irq_tx(nrf);
+	nrf24l01p_reset_irq_rt(nrf);
+}
+
+void nrf24l01p_reset_addresses(nrf24l01p_HandleTypeDef *nrf) {
 	uint8_t buf0[5] = {0xE7, 0xE7, 0xE7, 0xE7, 0xE7};
 	nrf24l01p_write_register_buffer(nrf, NRF24L01P_REG_RX_ADDR_P0, buf0, 5);
 	uint8_t buf1[5] = {0xC2, 0xC2, 0xC2, 0xC2, 0xC2};
@@ -417,61 +411,95 @@ void nrf24l01p_reset(nrf24l01p_HandleTypeDef *nrf) {
 	address++;
 	nrf24l01p_write_register(nrf, NRF24L01P_REG_RX_ADDR_P5, address);
 	nrf24l01p_write_register_buffer(nrf, NRF24L01P_REG_TX_ADDR, buf0, 5);
+}
 
+void nrf24l01p_reset_pl_width(nrf24l01p_HandleTypeDef *nrf) {
 	nrf24l01p_write_register(nrf, NRF24L01P_REG_RX_PW_P0, 0x00);
 	nrf24l01p_write_register(nrf, NRF24L01P_REG_RX_PW_P1, 0x00);
 	nrf24l01p_write_register(nrf, NRF24L01P_REG_RX_PW_P2, 0x00);
 	nrf24l01p_write_register(nrf, NRF24L01P_REG_RX_PW_P3, 0x00);
 	nrf24l01p_write_register(nrf, NRF24L01P_REG_RX_PW_P4, 0x00);
 	nrf24l01p_write_register(nrf, NRF24L01P_REG_RX_PW_P5, 0x00);
+}
 
-	nrf24l01p_write_register(nrf, NRF24L01P_REG_FIFO_STATUS, 0x11);
+void nrf24l01p_reset_pipes(nrf24l01p_HandleTypeDef *nrf) {
+	nrf24l01p_write_register(nrf, NRF24L01P_REG_SETUP_AW, 0x03);
+	nrf24l01p_reset_addresses(nrf);
+	nrf24l01p_reset_pl_width(nrf);
+	nrf24l01p_write_register(nrf, NRF24L01P_REG_EN_AA, 0x3F);
 	nrf24l01p_write_register(nrf, NRF24L01P_REG_DYNPD, 0x00);
+	nrf24l01p_set_dpl_en(nrf, NRF_OFF);
+	nrf24l01p_write_register(nrf, NRF24L01P_REG_EN_RXADDR, 0x03);
+}
+
+void nrf24l01_reset_features(nrf24l01p_HandleTypeDef *nrf) {
 	nrf24l01p_write_register(nrf, NRF24L01P_REG_FEATURE, 0x00);
 }
 
-//general outline, but recommended to manually initialize
+/* Main Functions */
 void nrf24l01p_rx_init(nrf24l01p_HandleTypeDef *nrf) {
 	nrf24l01p_set_mode(nrf, NRF_RECIEVE);
 	nrf24l01p_set_power(nrf, NRF_ON);
 
-	nrf24l01p_set_tx_irq(nrf, NRF_OFF);
-	nrf24l01p_set_rt_irq(nrf, NRF_OFF);
+	nrf24l01p_set_irq_tx_en(nrf, NRF_OFF);
+	nrf24l01p_set_irq_rt_en(nrf, NRF_OFF);
+	nrf24l01p_reset_irq_tx(nrf);
+	nrf24l01p_reset_irq_rt(nrf);
 
-	nrf24l01p_set_rx_irq(nrf, NRF_ON);
 	nrf24l01p_flush_rx(nrf);
-	nrf24l01p_set_rx_dr(nrf);
+	nrf24l01p_set_irq_rx_en(nrf, NRF_ON);
+	nrf24l01p_reset_irq_rx(nrf);
 
 	nrf24l01p_set_ce(nrf, NRF_ON);
 }
 
-//general outline, but recommended to manually initialize
 void nrf24l01p_tx_init(nrf24l01p_HandleTypeDef *nrf) {
 	nrf24l01p_set_mode(nrf, NRF_TRANSMIT);
 	nrf24l01p_set_power(nrf, NRF_ON);
 
-	nrf24l01p_set_rx_irq(nrf, NRF_OFF);
+	nrf24l01p_set_irq_rx_en(nrf, NRF_OFF);
 
-	nrf24l01p_set_tx_irq(nrf, NRF_ON);
-	nrf24l01p_set_rt_irq(nrf, NRF_ON);
 	nrf24l01p_flush_tx(nrf);
-	nrf24l01p_set_tx_ds(nrf);
+	nrf24l01p_set_irq_tx_en(nrf, NRF_ON);
+	nrf24l01p_set_irq_rt_en(nrf, NRF_ON);
+	nrf24l01p_reset_irq_tx(nrf);
+	nrf24l01p_reset_irq_rt(nrf);
 
 	nrf24l01p_set_ce(nrf, NRF_ON);
 }
 
-void nrf24l01p_rx_receive(nrf24l01p_HandleTypeDef *nrf, uint8_t* buf) {
+//void nrf24l01p_tx_transmit(nrf24l01p_HandleTypeDef *nrf, uint8_t* buf) {
+//}
 
+void nrf24l01p_rx_irq_handler(nrf24l01p_HandleTypeDef *nrf) {
+	uint8_t len = nrf24l01p_read_rx_pl_width(nrf);
+	uint8_t buf[len];
+
+	nrf24l01p_read_rx_fifo(nrf, buf, len);
+
+	nrf24l01p_recieve_callback(buf, len);
+
+	if (nrf24l01p_get_rx_fifo(nrf) == NRF_FIFO_EMPTY) {
+		nrf24l01p_reset_irq_rx(nrf);
+		return;
+	}
+
+	nrf24l01p_rx_irq_handler(nrf);
 }
-void nrf24l01p_tx_transmit(nrf24l01p_HandleTypeDef *nrf, uint8_t* buf) {
-
+void nrf24l01p_tx_irq_handler(nrf24l01p_HandleTypeDef *nrf) {
+}
+void nrf24l01p_rt_irq_handler(nrf24l01p_HandleTypeDef *nrf){
 }
 
 void nrf24l01p_irq_handler(nrf24l01p_HandleTypeDef *nrf) {
-
-}
-
-__weak void nrf24l01p_rx_irq_callback(uint8_t *buf, uint8_t len) {
-	UNUSED(buf);
-	UNUSED(len);
+	uint8_t irq_status = nrf24l01p_read_register(nrf, NRF24L01P_REG_STATUS) >> 4;
+	if ((irq_status >> 2) & 1) {
+		nrf24l01p_rx_irq_handler(nrf);
+	}
+	if ((irq_status >> 1) & 1) {
+		nrf24l01p_tx_irq_handler(nrf);
+	}
+	if (irq_status & 1) {
+		nrf24l01p_rt_irq_handler(nrf);
+	}
 }
