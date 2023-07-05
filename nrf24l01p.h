@@ -184,8 +184,7 @@ void nrf24l01p_read_register_buffer(nrf24l01p_HandleTypeDef *nrf, uint8_t reg, u
 void nrf24l01p_write_register(nrf24l01p_HandleTypeDef *nrf, uint8_t reg, uint8_t val);
 void nrf24l01p_write_register_buffer(nrf24l01p_HandleTypeDef *nrf, uint8_t reg, uint8_t *buf, uint8_t len);
 
-//returns payload (buf) length
-uint8_t nrf24l01p_read_rx_fifo(nrf24l01p_HandleTypeDef *nrf, uint8_t *buf);
+void nrf24l01p_read_rx_fifo(nrf24l01p_HandleTypeDef *nrf, uint8_t *buf, uint8_t len);
 void nrf24l01p_write_tx_fifo(nrf24l01p_HandleTypeDef *nrf, uint8_t *buf, uint8_t len);
 
 void nrf24l01p_flush_tx(nrf24l01p_HandleTypeDef *nrf);
@@ -204,15 +203,15 @@ void nrf24l01p_write_noack_pl(nrf24l01p_HandleTypeDef *nrf, uint8_t *buf, uint8_
 uint8_t nrfl0124p_get_status(nrf24l01p_HandleTypeDef *nrf);
 
 /* Read Write Registers*/
-void nrf24l01p_set_rx_irq(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_state state);
-nrf24l01p_state nrf24l01p_get_rx_irq(nrf24l01p_HandleTypeDef *nrf);
+void nrf24l01p_set_irq_rx_en(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_state state);
+nrf24l01p_state nrf24l01p_get_irq_rx_en(nrf24l01p_HandleTypeDef *nrf);
 
-void nrf24l01p_set_tx_irq(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_state state);
-nrf24l01p_state nrf24l01p_get_tx_irq(nrf24l01p_HandleTypeDef *nrf);
+void nrf24l01p_set_irq_tx_en(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_state state);
+nrf24l01p_state nrf24l01p_get_irq_tx_en(nrf24l01p_HandleTypeDef *nrf);
 
 //rt -> retransmits
-void nrf24l01p_set_rt_irq(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_state state);
-nrf24l01p_state nrf24l01p_get_rt_irq(nrf24l01p_HandleTypeDef *nrf);
+void nrf24l01p_set_irq_rt_en(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_state state);
+nrf24l01p_state nrf24l01p_get_irq_rt_en(nrf24l01p_HandleTypeDef *nrf);
 
 void nrf24l01p_set_crc_en(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_state state);
 nrf24l01p_state nrf24l01p_get_crc_en(nrf24l01p_HandleTypeDef *nrf);
@@ -257,16 +256,10 @@ nrf24l01p_data_rate nrf24l01p_get_data_rate(nrf24l01p_HandleTypeDef *nrf);
 void nrf24l01p_set_output_power(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_output_power power);
 nrf24l01p_output_power nrf24l01p_get_output_power(nrf24l01p_HandleTypeDef *nrf);
 
-//dr -> data ready
-void nrf24l01p_set_rx_dr(nrf24l01p_HandleTypeDef *nrf);
-uint8_t nrf24l01p_get_rx_dr(nrf24l01p_HandleTypeDef *nrf);
-
-//ds -> data sent
-void nrf24l01p_set_tx_ds(nrf24l01p_HandleTypeDef *nrf);
-uint8_t nrf24l01p_get_tx_ds(nrf24l01p_HandleTypeDef *nrf);
-
-void nrf24l01p_set_max_rt(nrf24l01p_HandleTypeDef *nrf);
-uint8_t nrf24l01p_get_max_rt(nrf24l01p_HandleTypeDef *nrf);
+//reset irq functions are in the reset section
+nrf24l01p_state nrf24l01p_get_irq_rx(nrf24l01p_HandleTypeDef *nrf);
+nrf24l01p_state nrf24l01p_get_irq_tx(nrf24l01p_HandleTypeDef *nrf);
+nrf24l01p_state nrf24l01p_get_irq_rt(nrf24l01p_HandleTypeDef *nrf);
 
 nrf24l01p_pipe nrf24l01p_get_pipe_available(nrf24l01p_HandleTypeDef *nrf);
 
@@ -313,17 +306,38 @@ nrf24l01p_state nrf24l01p_get_ack_en(nrf24l01p_HandleTypeDef *nrf);
 void nrf24l01p_set_dyn_ack_en(nrf24l01p_HandleTypeDef *nrf, nrf24l01p_state state);
 nrf24l01p_state nrf24l01p_get_dyn_ack_en(nrf24l01p_HandleTypeDef *nrf);
 
-/* Main Functions */
-void nrf24l01p_reset(nrf24l01p_HandleTypeDef *nrf);
+/* Reset Functions */
+void nrf24l01p_flush_all(nrf24l01p_HandleTypeDef *nrf);
 
+void nrf24l01p_reset_irq_rx(nrf24l01p_HandleTypeDef *nrf);
+void nrf24l01p_reset_irq_tx(nrf24l01p_HandleTypeDef *nrf);
+void nrf24l01p_reset_irq_rt(nrf24l01p_HandleTypeDef *nrf);
+
+//flushes rx,tx and resets interrupts
+void nrf24l01p_reset_irq_all(nrf24l01p_HandleTypeDef *nrf);
+
+void nrf24l01p_reset_addresses(nrf24l01p_HandleTypeDef *nrf);
+
+//pl -> payload
+void nrf24l01p_reset_pl_width(nrf24l01p_HandleTypeDef *nrf);
+
+void nrf24l01p_reset_pipes(nrf24l01p_HandleTypeDef *nrf);
+
+void nrf24l01_reset_features(nrf24l01p_HandleTypeDef *nrf);
+
+/* Main Functions */
+//general outline, but recommended to manually initialize
 void nrf24l01p_rx_init(nrf24l01p_HandleTypeDef *nrf);
+//general outline, but recommended to manually initialize
 void nrf24l01p_tx_init(nrf24l01p_HandleTypeDef *nrf);
 
-void nrf24l01p_rx_receive(nrf24l01p_HandleTypeDef *nrf, uint8_t* buf);
 void nrf24l01p_tx_transmit(nrf24l01p_HandleTypeDef *nrf, uint8_t* buf);
 
+void nrf24l01p_rx_irq_handler(nrf24l01p_HandleTypeDef *nrf);
+void nrf24l01p_tx_irq_handler(nrf24l01p_HandleTypeDef *nrf);
+void nrf24l01p_rt_irq_handler(nrf24l01p_HandleTypeDef *nrf);
 //should be called in the interrupt callback
 void nrf24l01p_irq_handler(nrf24l01p_HandleTypeDef *nrf);
 
-//redefine this with what you want to happen when data is recieved
-__weak void nrf24l01p_rx_irq_callback(uint8_t *buf, uint8_t len);
+/* redefine this with what you want to happen when data is recieved */
+void nrf24l01p_recieve_callback(uint8_t *buf, uint8_t len);
