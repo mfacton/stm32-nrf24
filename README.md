@@ -1,5 +1,5 @@
-# STM32_HAL_nrf24l01p
-STM32 abstraction library for nrf24l01+ using HAL
+# STM32 HAL NRF24
+STM32 library for nrf24l01+ using HAL
 
 some functions labeled "Main Functions" are still not complete
 
